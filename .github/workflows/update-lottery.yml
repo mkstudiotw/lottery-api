@@ -1,0 +1,30 @@
+name: Update Lottery Data
+
+on:
+  schedule:
+    - cron: '30 12 * * 1,4'  # 每週一、四 UTC 12:30 = 台灣時間 20:30
+    - cron: '0 13 * * 1,4'   # 備用：UTC 13:00 = 台灣時間 21:00
+  workflow_dispatch:           # 允許手動觸發
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch latest lottery data
+        run: node scripts/fetch.js
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add .
+          git diff --staged --quiet || git commit -m "Auto update lottery data $(date '+%Y/%m/%d %H:%M')"
+          git push
