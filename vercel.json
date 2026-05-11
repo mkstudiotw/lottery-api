@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/privacy", "destination": "/public/privacy.html" },
+    { "source": "/app-ads.txt", "destination": "/public/app-ads.txt" },
     { "source": "/api/:path*", "destination": "/api/:path*" }
   ],
   "crons": [
