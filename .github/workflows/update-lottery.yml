@@ -2,29 +2,23 @@ name: Update Lottery Data
 
 on:
   schedule:
-    - cron: '30 12 * * 1,4'  # 每週一、四 UTC 12:30 = 台灣時間 20:30
-    - cron: '0 13 * * 1,4'   # 備用：UTC 13:00 = 台灣時間 21:00
-  workflow_dispatch:           # 允許手動觸發
+    - cron: '30 14 * * 1,2,3,4,5,6'  # 台灣時間 22:30，每週一到六
+  workflow_dispatch:  # 允許手動執行
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '18'
 
-      - name: Fetch latest lottery data
+      - name: Fetch lottery data
         run: node scripts/fetch.js
 
-      - name: Commit and push if changed
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          git add .
-          git diff --staged --quiet || git commit -m "Auto update lottery data $(date '+%Y/%m/%d %H:%M')"
-          git push
+      - name: Deploy to Vercel
+        run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
